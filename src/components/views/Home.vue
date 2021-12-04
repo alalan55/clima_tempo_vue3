@@ -10,7 +10,3 @@ import {CapaTemplate} from '@/components/templates'
         }
     }
 </script>
-
-<style lang="scss" scoped>
-
-</style>
