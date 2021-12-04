@@ -43,7 +43,7 @@ export default {
     const searchCity = async () => {
       try {
         let req = await fetch(
-          `https://api.hgbrasil.com/weather?key=${process.env.VUE_APP_KEY}&city_name=${search.value}`,
+            `https://api.hgbrasil.com/weather?format=json-cors&key=${process.env.VUE_APP_KEY}&city_name=${search.value}`,
           objectRequest
         );
         let res = await req.json();
