@@ -5,7 +5,8 @@
                 <span>Pesquise uma cidade:</span>
             </div>
             <div class="input">
-                <input type="Ex: Rio de Janeiro">
+                <input type="text" placeholder="Ex: Rio de Janeiro" v-model="search" @keypress="searchCityByCLick">
+                <i class="fas fa-search" @click="searchCity"></i>
             </div>
         </div>
 
@@ -14,8 +15,33 @@
 </template>
 
 <script>
+import { ref } from 'vue'
+import {useRoute} from 'vue-router'
 
     export default {
+
+        setup(){
+            const route = useRoute();
+
+            const search = ref('')
+
+            const searchCity = () =>{
+                console.log(search.value)
+                route
+                //salvar a resposta no vuex e redirecionar para outra rota
+            }
+            const searchCityByCLick = (e) =>{
+                if(e.key.toLowerCase() == 'enter'){
+                    searchCity();
+                }
+            }
+
+            return{
+                search,
+                searchCity,
+                searchCityByCLick
+            }
+        }
         
     }
 </script>
@@ -50,6 +76,7 @@
 
         .input{
             width: 90%;
+            position: relative;
             input{
                 width: 100%;
                 padding: .7rem 1rem;
@@ -59,6 +86,12 @@
                 &:focus{
                     outline: none;
                 }
+            }
+            i{
+                position: absolute;
+                right: 15px;
+                top: 11px;
+                cursor: pointer;
             }
         }
     }
