@@ -21,36 +21,39 @@
 
 <script>
 import { ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRouter } from "vue-router";
+import {useStore} from 'vuex'
 
 export default {
   setup() {
-    const route = useRoute();
+    const route = useRouter();
+    const store = useStore();
 
     const search = ref("");
+    const proxy = 'https://cors-anywhere.herokuapp.com/' //only to development and run locally
 
     let objectRequest = {
       method: "GET",
       mode: "cors",
       cache: "default",
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
+       Accept: "application/json",
+       "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
+       "Access-Control-Allow-Headers":
+         "Content-Type, Access-Control-Allow-Headers, Origin, X-Requested-With, Content-Type, Accept, Authorization",
       },
     };
 
     const searchCity = async () => {
       try {
-        let req = await fetch(
-            `https://api.hgbrasil.com/weather?format=json-cors&key=${process.env.VUE_APP_KEY}&city_name=${search.value}`,
-          objectRequest
-        );
-        let res = await req.json();
-
-        console.log(res);
+       let req = await fetch(proxy + `https://api.hgbrasil.com/weather?format=json-cors&key=${process.env.VUE_APP_KEY}&city_name=${search.value}`, objectRequest);
+       let res = await req.json()
+       
+       store.dispatch('PUT_ATUAL_CITY', res)
+       route.push({name: 'City'})
       } catch (error) {
-        console.error(error);
+       console.error(error);
       }
       route;
       //salvar a resposta no vuex e redirecionar para outra rota
