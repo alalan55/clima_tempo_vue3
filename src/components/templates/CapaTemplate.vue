@@ -1,5 +1,7 @@
 <template>
+
   <div class="capa-template">
+    <Toast v-if="notFound"/>
     <div class="conteudo-capa">
       <div class="title">
         <span>Pesquise uma cidade:</span>
@@ -12,10 +14,9 @@
           @keypress="searchCityByCLick"
         />
         <i class="fas fa-search" @click="searchCity"></i>
+        <img src="../../assets/img/load.gif" alt="" class="load" v-if="load">
       </div>
     </div>
-
-    <!-- <small>https://console.hgbrasil.com/keys</small> -->
   </div>
 </template>
 
@@ -23,14 +24,20 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import {useStore} from 'vuex'
+import {Toast} from '@/components/atoms'
 
 export default {
+  components:{
+    Toast
+  },
   setup() {
     const route = useRouter();
     const store = useStore();
 
     const search = ref("");
     const proxy = 'https://cors-anywhere.herokuapp.com/' //only to development and run locally
+    const load = ref(false)
+    const notFound = ref(false)
 
     let objectRequest = {
       method: "GET",
@@ -47,16 +54,34 @@ export default {
 
     const searchCity = async () => {
       try {
+        load.value = true
        let req = await fetch(proxy + `https://api.hgbrasil.com/weather?format=json-cors&key=${process.env.VUE_APP_KEY}&city_name=${search.value}`, objectRequest);
-       let res = await req.json()
+       let res = await req.json();
+
+
+       if(normalizarString(search.value).includes(normalizarString(res.results.city_name))){
+         store.dispatch('PUT_ATUAL_CITY', res)
+   
+          setTimeout(() => {
+            load.value = false
+            route.push({name: 'City'})
+            
+          }, 2000);
+         
+       }else{
+         notFound.value = true
+         load.value = false
+
+         setTimeout(() => {
+           notFound.value = false
+         }, 3500);
+       }
        
-       store.dispatch('PUT_ATUAL_CITY', res)
-       route.push({name: 'City'})
       } catch (error) {
        console.error(error);
+       load.value = false
+   
       }
-      route;
-      //salvar a resposta no vuex e redirecionar para outra rota
     };
     const searchCityByCLick = (e) => {
       if (e.key.toLowerCase() == "enter") {
@@ -64,10 +89,16 @@ export default {
       }
     };
 
+    const normalizarString = (e) =>{
+      return e.normalize("NFD").replace(/[^a-zA-Zs]/g, "").toLowerCase()
+    }
+
     return {
       search,
       searchCity,
       searchCityByCLick,
+      load,
+      notFound
     };
   },
 };
@@ -80,6 +111,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
 
   .conteudo-capa {
     border-radius: var(--b-radius);
@@ -120,9 +152,16 @@ export default {
         top: 11px;
         cursor: pointer;
       }
+      .load{
+        position: absolute;
+        right: 15px;
+        top: 11px;
+        width: 20px;
+      }
     }
   }
 }
+
 
 @media screen and (max-width: 1000px) {
   .conteudo-capa {

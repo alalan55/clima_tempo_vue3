@@ -11,7 +11,6 @@ export default createStore({
   },
   actions: {
     PUT_ATUAL_CITY({commit}, city){
-      console.log(city, 'store')
       commit('SET_ATUAL_CITY', city)
     }
   },
