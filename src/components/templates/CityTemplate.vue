@@ -65,15 +65,16 @@
   </div>
 </template>
 <script>
-import * as Mock from "@/components/mock/";
 import { ref } from "vue";
+import {useStore} from 'vuex'
 export default {
   setup() {
+    const store = useStore();
     const data = ref({});
     const state = ref(0);
 
     const initData = () => {
-      let res = Mock.mock;
+      let res = store.getters.$city
       addId(res);
     };
     const addId = (value) => {
@@ -102,7 +103,6 @@ export default {
   flex-direction: column;
 
   .name-city {
-    //  border: 1px solid red;
     width: 80%;
     padding: 0.6rem;
 
@@ -211,7 +211,6 @@ export default {
       }
     }
     .column-right {
-      // border: 1px solid red;
       .bloco_right {
         height: 97%;
         border-radius: var(--b-radius);
