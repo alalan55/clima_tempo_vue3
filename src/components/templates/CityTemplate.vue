@@ -1,5 +1,5 @@
 <template>
-  <div class="city-template">
+  <div class="city-template" v-if="!objetoEhVazio(data)">
     <div class="name-city">
       <h1>{{ data.results.city_name }}</h1>
     </div>
@@ -63,6 +63,9 @@
       </div>
     </div>
   </div>
+  <div class="no-content" v-else>
+    <span>Ops, parece que nenhuma cidade ainda foi pesquisada!</span>
+  </div>
 </template>
 <script>
 import { ref } from "vue";
@@ -75,7 +78,10 @@ export default {
 
     const initData = () => {
       let res = store.getters.$city
-      addId(res);
+      if(!objetoEhVazio(res)){
+
+        addId(res);
+      }
     };
     const addId = (value) => {
       let arrForecast = [];
@@ -83,11 +89,17 @@ export default {
       value.forecast = arrForecast;
       data.value = value;
     };
+
+    function objetoEhVazio(e){
+      return Object.entries(e).length === 0;
+    }
+
     initData();
 
     return {
       data,
       state,
+      objetoEhVazio
     };
   },
 };
@@ -286,6 +298,18 @@ export default {
         }
       }
     }
+  }
+}
+.no-content{
+  height: calc(100vh - 70px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  span{
+    font-weight: 500;
+    font-size: 1.2em;
   }
 }
 
